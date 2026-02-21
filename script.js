@@ -1,3 +1,18 @@
+const API_BASE_URL = localStorage.getItem('apiBaseUrl') || 'http://localhost:3000';
+const AUTH_TOKEN_KEY = 'defesaAuthToken';
+const AUTH_USER_KEY = 'defesaAuthUser';
+
+const authSection = document.querySelector('#authSection');
+const appSection = document.querySelector('#appSection');
+const loginTabBtn = document.querySelector('#loginTabBtn');
+const signupTabBtn = document.querySelector('#signupTabBtn');
+const authEmail = document.querySelector('#authEmail');
+const authPassword = document.querySelector('#authPassword');
+const authSubmitBtn = document.querySelector('#authSubmitBtn');
+const authMessage = document.querySelector('#authMessage');
+const sessionUser = document.querySelector('#sessionUser');
+const logoutBtn = document.querySelector('#logoutBtn');
+
 const analyzeBtn = document.querySelector('#analyzeBtn');
 const contentInput = document.querySelector('#content');
 const themeSelect = document.querySelector('#themeSelect');
@@ -21,6 +36,8 @@ const trainingFeedback = document.querySelector('#trainingFeedback');
 
 const PROFILE_KEY = 'defesaCognitivaProfile';
 const TRAINING_KEY = 'defesaCognitivaTraining';
+
+let authMode = 'login';
 
 const patterns = [
   { name: 'Urgência artificial', regex: /\b(agora|já|última chance|só hoje|imediatamente|antes que acabe)\b/gi, weight: 18, detail: 'Pressão temporal para reduzir reflexão.', metric: 'urgency_sensitivity_score' },
@@ -56,29 +73,77 @@ const trainingScenarios = [
 
 let currentScenario = null;
 
+function getToken() {
+  return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+function getCurrentUser() {
+  const raw = localStorage.getItem(AUTH_USER_KEY);
+  return raw ? JSON.parse(raw) : null;
+}
+
+function setSession(token, user) {
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+}
+
+function clearSession() {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+}
+
+function showAuthMessage(message, isError = false) {
+  authMessage.textContent = message;
+  authMessage.style.color = isError ? '#ff4d6d' : '#9ba9c2';
+}
+
+function setAuthMode(mode) {
+  authMode = mode;
+  loginTabBtn.classList.toggle('active', mode === 'login');
+  signupTabBtn.classList.toggle('active', mode === 'signup');
+  authSubmitBtn.textContent = mode === 'login' ? 'Entrar' : 'Criar conta';
+  showAuthMessage(mode === 'login' ? 'Entra para continuar.' : 'Cria a tua conta para começar.');
+}
+
+function toggleAppVisibility(isAuthenticated) {
+  authSection.classList.toggle('hidden', isAuthenticated);
+  appSection.classList.toggle('hidden', !isAuthenticated);
+
+  if (isAuthenticated) {
+    const user = getCurrentUser();
+    sessionUser.textContent = user ? `Sessão ativa: ${user.email}` : '';
+  }
+}
+
+async function authRequest(endpoint, payload) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || 'Falha na autenticação.');
+  }
+  return data;
+}
+
 function computeRisk(score) {
   if (score >= 65) return { label: 'Risco alto', className: 'high' };
   if (score >= 35) return { label: 'Risco médio', className: 'medium' };
   return { label: 'Risco baixo', className: 'low' };
 }
 
-function analyze(text) {
-  const found = [];
-  let score = 0;
-  patterns.forEach((pattern) => {
-    const matches = text.match(pattern.regex);
-    if (matches?.length) {
-      const localScore = Math.min(pattern.weight + (matches.length - 1) * 4, pattern.weight + 12);
-      score += localScore;
-      found.push({ ...pattern, occurrences: matches.length, localScore });
-    }
+function enrichTechniques(techniques) {
+  return techniques.map((item) => {
+    const pattern = patterns.find((p) => p.name === item.name);
+    return {
+      ...item,
+      detail: pattern?.detail || 'Padrão de persuasão identificado.',
+      metric: pattern?.metric || null
+    };
   });
-  const emphasisCount = (text.match(/[!?]{2,}/g) || []).length;
-  if (emphasisCount > 0) {
-    score += Math.min(10, emphasisCount * 3);
-    found.push({ name: 'Exagero emocional', detail: 'Pontuação intensa (!!!, ???) para amplificar reação.', occurrences: emphasisCount, localScore: Math.min(10, emphasisCount * 3), metric: 'emotional_volatility_index' });
-  }
-  return { score: Math.min(100, score), found, intensity: Math.min(1, score / 100) };
 }
 
 function baseProfile() {
@@ -196,15 +261,84 @@ function nextScenario() {
   techniqueGuess.value = '';
 }
 
-analyzeBtn.addEventListener('click', () => {
+loginTabBtn.addEventListener('click', () => setAuthMode('login'));
+signupTabBtn.addEventListener('click', () => setAuthMode('signup'));
+
+authSubmitBtn.addEventListener('click', async () => {
+  const email = authEmail.value.trim();
+  const password = authPassword.value.trim();
+
+  if (!email || !password) {
+    showAuthMessage('Preenche email e password.', true);
+    return;
+  }
+
+  try {
+    authSubmitBtn.disabled = true;
+    const endpoint = authMode === 'login' ? '/auth/login' : '/auth/signup';
+    const result = await authRequest(endpoint, { email, password });
+    setSession(result.token, result.user);
+    toggleAppVisibility(true);
+    showAuthMessage('Sessão iniciada com sucesso.');
+    authPassword.value = '';
+  } catch (error) {
+    showAuthMessage(error.message, true);
+  } finally {
+    authSubmitBtn.disabled = false;
+  }
+});
+
+logoutBtn.addEventListener('click', () => {
+  clearSession();
+  toggleAppVisibility(false);
+  resultSection.classList.add('hidden');
+  showAuthMessage('Sessão terminada.');
+});
+
+analyzeBtn.addEventListener('click', async () => {
   const text = contentInput.value.trim();
   if (!text) {
     alert('Insere um texto para análise.');
     return;
   }
-  const analysis = analyze(text.toLowerCase());
-  renderResult(analysis);
-  updateProfile(analysis, themeSelect.value);
+
+  const token = getToken();
+  if (!token) {
+    toggleAppVisibility(false);
+    showAuthMessage('Precisas de iniciar sessão para analisar.', true);
+    return;
+  }
+
+  try {
+    analyzeBtn.disabled = true;
+    const response = await fetch(`${API_BASE_URL}/analyze`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ text })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || 'Erro na análise.');
+    }
+
+    const found = enrichTechniques(data.techniques || []);
+    const analysis = {
+      score: data.score,
+      found,
+      intensity: Math.min(1, data.score / 100)
+    };
+
+    renderResult(analysis);
+    updateProfile(analysis, themeSelect.value);
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    analyzeBtn.disabled = false;
+  }
 });
 
 resetProfileBtn.addEventListener('click', () => {
@@ -232,5 +366,16 @@ submitGuessBtn.addEventListener('click', () => {
   refreshTrainingLevel(stats);
 });
 
-renderProfile(loadProfile());
-refreshTrainingLevel(loadTraining());
+function bootstrap() {
+  renderProfile(loadProfile());
+  refreshTrainingLevel(loadTraining());
+
+  if (getToken() && getCurrentUser()) {
+    toggleAppVisibility(true);
+  } else {
+    setAuthMode('login');
+    toggleAppVisibility(false);
+  }
+}
+
+bootstrap();
