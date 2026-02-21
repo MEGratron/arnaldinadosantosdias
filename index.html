@@ -8,38 +8,14 @@
   </head>
   <body>
     <main class="container">
-      <section id="authSection" class="auth-card">
-        <p class="kicker">Entrada segura</p>
-        <h1>Login da app</h1>
-        <p>Inicia sessão para analisar conteúdo e guardar o teu progresso.</p>
-
-        <div class="auth-tabs">
-          <button id="loginTabBtn" class="ghost active">Login</button>
-          <button id="signupTabBtn" class="ghost">Criar conta</button>
-        </div>
-
-        <label for="authEmail">Email</label>
-        <input id="authEmail" type="email" placeholder="teu@email.com" />
-
-        <label for="authPassword">Password</label>
-        <input id="authPassword" type="password" placeholder="mínimo 6 caracteres" />
-
-        <button id="authSubmitBtn">Entrar</button>
-        <p id="authMessage" class="muted"></p>
-      </section>
-
-      <section id="appSection" class="hidden">
+      <section id="appSection">
         <header class="hero">
           <p class="kicker">Prótese cognitiva</p>
           <h1>Defesa Cognitiva</h1>
           <p>
-            Esta app não decide a verdade. Ela deteta padrões de manipulação emocional para criar
-            espaço entre estímulo e reação.
+            Esta app não decide a verdade. Ela deteta padrões de manipulação emocional
+            para criar espaço entre estímulo e reação.
           </p>
-          <div class="session-row">
-            <p id="sessionUser" class="muted"></p>
-            <button id="logoutBtn" class="ghost">Terminar sessão</button>
-          </div>
         </header>
 
         <section class="input-card">
@@ -49,6 +25,7 @@
             rows="10"
             placeholder="Ex: Se não fizeres isto AGORA vais perder tudo! Só hoje, não contes a ninguém..."
           ></textarea>
+
           <select id="themeSelect" aria-label="Tema principal">
             <option value="urgency">Urgência</option>
             <option value="financial">Financeiro</option>
@@ -56,6 +33,7 @@
             <option value="relational">Relacional</option>
             <option value="fear">Medo</option>
           </select>
+
           <button id="analyzeBtn">Analisar manipulação</button>
         </section>
 
@@ -81,15 +59,19 @@
             <p id="dominantTrend">Tendência dominante: sem dados ainda.</p>
             <ul id="profileMetrics"></ul>
             <button id="resetProfileBtn" class="ghost">Apagar perfil local</button>
-            <p class="muted">Privado: guardado apenas no teu navegador (localStorage).</p>
+            <p class="muted">
+              Privado: guardado apenas no teu navegador (localStorage).
+            </p>
           </article>
 
           <article class="profile-card">
             <h3>Camada 4 — Treino Cognitivo</h3>
             <p id="trainingLevel">Nível: Beginner</p>
             <p id="trainingPrompt">Clica para iniciar um cenário.</p>
+
             <div class="training-controls">
               <button id="nextScenarioBtn">Novo cenário</button>
+
               <select id="techniqueGuess">
                 <option value="">Escolhe a técnica detetada</option>
                 <option value="Urgência artificial">Urgência artificial</option>
@@ -99,10 +81,14 @@
                 <option value="Isolamento social">Isolamento social</option>
                 <option value="Polarização extrema">Polarização extrema</option>
               </select>
+
               <button id="submitGuessBtn" class="ghost">Responder</button>
             </div>
+
             <p id="trainingScore">Pontuação: 0</p>
-            <p id="trainingFeedback" class="muted">Treino local, sem ranking público.</p>
+            <p id="trainingFeedback" class="muted">
+              Treino local, sem ranking público.
+            </p>
           </article>
         </section>
       </section>
