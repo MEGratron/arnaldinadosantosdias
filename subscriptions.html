@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planos de Subscrição | Defesa Cognitiva</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="hero">
+        <p class="kicker">Subscrição</p>
+        <h1>Planos de Subscrição</h1>
+        <p id="planSessionInfo" class="muted"></p>
+        <div class="session-row">
+          <button id="backBtn" class="ghost">Voltar</button>
+          <button id="logoutBtn" class="ghost">Terminar sessão</button>
+        </div>
+      </section>
+
+      <section class="plans-grid">
+        <article class="plan-card">
+          <h3>Freemium</h3>
+          <p class="price">0€/mês</p>
+          <ul>
+            <li>5 análises grátis/dia</li>
+          </ul>
+        </article>
+
+        <article class="plan-card featured">
+          <h3>Premium</h3>
+          <p class="price">7–15€/mês</p>
+          <ul>
+            <li>Análises ilimitadas</li>
+            <li>Perfil cognitivo</li>
+            <li>Monitorização contínua</li>
+          </ul>
+          <button id="premiumCheckoutBtn">Ativar Premium</button>
+        </article>
+
+        <article class="plan-card">
+          <h3>B2B</h3>
+          <p class="price">Plano empresarial</p>
+          <ul>
+            <li>Licenças por utilizador</li>
+            <li>API por volume</li>
+          </ul>
+          <a class="button-link" href="mailto:comercial@defesacognitiva.app?subject=Pedido%20B2B">Falar com vendas</a>
+        </article>
+      </section>
+
+      <p id="plansMessage" class="muted"></p>
+    </main>
+
+    <script src="subscriptions.js"></script>
+  </body>
+</html>
