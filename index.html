@@ -26,6 +26,43 @@
     </section>
 
     <section class="input-card fade-in delay-1">
+      <section id="resultSection" class="result-section hidden">
+
+  <div class="score-dashboard">
+
+    <div class="score-circle">
+      <svg width="160" height="160">
+        <circle cx="80" cy="80" r="70" stroke="#1F2937" stroke-width="12" fill="none"/>
+        <circle id="progressCircle"
+          cx="80"
+          cy="80"
+          r="70"
+          stroke="#3B82F6"
+          stroke-width="12"
+          fill="none"
+          stroke-dasharray="440"
+          stroke-dashoffset="440"
+          stroke-linecap="round"
+        />
+      </svg>
+      <div class="score-text">
+        <span id="scoreValue">0</span>
+        <small>Score</small>
+      </div>
+    </div>
+
+    <div class="risk-info">
+      <h3 id="riskLevel">Low Risk</h3>
+      <div class="risk-bar">
+        <div id="riskFill"></div>
+      </div>
+
+      <ul id="techniquesList"></ul>
+    </div>
+
+  </div>
+
+</section>
       <label>Analyze digital content</label>
       <textarea placeholder="Paste message, post or email here..."></textarea>
       <button id="analyzeBtn" class="primary-cta">Run Analysis</button>
