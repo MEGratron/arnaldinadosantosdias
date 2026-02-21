@@ -9,10 +9,10 @@ Aplicação para analisar padrões de manipulação emocional com autenticação
    npm start
    ```
 2. Abre `index.html` no browser.
-3. Podes usar o botão **Entrar como Convidado** para aceder sem criar conta.
-4. Após autenticação/criação de perfil ou entrada como convidado, o utilizador entra em `app.html`.
+3. Na primeira página, faz login (ou cria conta).
+4. Depois de entrar, usa a análise textual da app.
 
+## Privacidade
 
-## Planos
-
-- Página de planos em `subscriptions.html` com opções Freemium, Premium e B2B.
+- O sistema guarda apenas o mínimo necessário para funcionar.
+- Evita guardar conteúdo sensível sem necessidade.

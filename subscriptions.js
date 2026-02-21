@@ -96,7 +96,7 @@ logoutBtn.addEventListener('click', () => {
   }
 
   if (guest?.allowed) {
-    planSessionInfo.textContent = 'Sessão convidado ativa (acesso total).';
+    planSessionInfo.textContent = guest.exempt ? 'Sessão convidado ativa (sem limite para este computador).' : `Sessão convidado ativa (restantes: ${guest.remaining ?? 0}).`;
     return;
   }
 
