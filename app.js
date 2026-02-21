@@ -1,18 +1,11 @@
 const API_BASE_URL = localStorage.getItem('apiBaseUrl') || 'http://localhost:3000';
 const AUTH_TOKEN_KEY = 'defesaAuthToken';
 const AUTH_USER_KEY = 'defesaAuthUser';
+const PROFILE_KEY = 'defesaCognitivaProfile';
+const TRAINING_KEY = 'defesaCognitivaTraining';
 
-const authSection = document.querySelector('#authSection');
-const appSection = document.querySelector('#appSection');
-const loginTabBtn = document.querySelector('#loginTabBtn');
-const signupTabBtn = document.querySelector('#signupTabBtn');
-const authEmail = document.querySelector('#authEmail');
-const authPassword = document.querySelector('#authPassword');
-const authSubmitBtn = document.querySelector('#authSubmitBtn');
-const authMessage = document.querySelector('#authMessage');
 const sessionUser = document.querySelector('#sessionUser');
 const logoutBtn = document.querySelector('#logoutBtn');
-
 const analyzeBtn = document.querySelector('#analyzeBtn');
 const contentInput = document.querySelector('#content');
 const themeSelect = document.querySelector('#themeSelect');
@@ -21,11 +14,9 @@ const scoreValue = document.querySelector('#scoreValue');
 const riskLevel = document.querySelector('#riskLevel');
 const techniquesList = document.querySelector('#techniquesList');
 const explanation = document.querySelector('#explanation');
-
 const dominantTrend = document.querySelector('#dominantTrend');
 const profileMetrics = document.querySelector('#profileMetrics');
 const resetProfileBtn = document.querySelector('#resetProfileBtn');
-
 const nextScenarioBtn = document.querySelector('#nextScenarioBtn');
 const submitGuessBtn = document.querySelector('#submitGuessBtn');
 const techniqueGuess = document.querySelector('#techniqueGuess');
@@ -34,18 +25,13 @@ const trainingScore = document.querySelector('#trainingScore');
 const trainingLevel = document.querySelector('#trainingLevel');
 const trainingFeedback = document.querySelector('#trainingFeedback');
 
-const PROFILE_KEY = 'defesaCognitivaProfile';
-const TRAINING_KEY = 'defesaCognitivaTraining';
-
-let authMode = 'login';
-
 const patterns = [
-  { name: 'Urgência artificial', regex: /\b(agora|já|última chance|só hoje|imediatamente|antes que acabe)\b/gi, weight: 18, detail: 'Pressão temporal para reduzir reflexão.', metric: 'urgency_sensitivity_score' },
-  { name: 'Ameaça e medo', regex: /\b(vais perder|perder tudo|perigo|ameaça|catástrofe|arruinado)\b/gi, weight: 22, detail: 'Ativa medo para provocar obediência rápida.', metric: 'fear_trigger_score' },
-  { name: 'Autoridade sem prova', regex: /\b(especialista|autoridade|fontes secretas|garantido por|100% comprovado)\b/gi, weight: 14, detail: 'Invoca autoridade para evitar questionamento.', metric: 'authority_bias_score' },
-  { name: 'Escassez manipulativa', regex: /\b(últimas vagas|restam apenas|exclusivo|limitado|só para poucos)\b/gi, weight: 16, detail: 'Escassez artificial para gerar impulso.', metric: 'urgency_sensitivity_score' },
-  { name: 'Isolamento social', regex: /\b(não contes a ninguém|só tu percebes|todos estão contra ti|eles escondem)\b/gi, weight: 15, detail: 'Tenta cortar validação externa e crítica.', metric: 'emotional_volatility_index' },
-  { name: 'Polarização extrema', regex: /\b(ou estás connosco ou contra nós|inimigos|traidores|destruir tudo)\b/gi, weight: 15, detail: 'Força pensamento binário e tribal.', metric: 'emotional_volatility_index' }
+  { name: 'Urgência artificial', regex: /\b(agora|já|última chance|só hoje|imediatamente|antes que acabe)\b/gi, detail: 'Pressão temporal para reduzir reflexão.', metric: 'urgency_sensitivity_score' },
+  { name: 'Ameaça e medo', regex: /\b(vais perder|perder tudo|perigo|ameaça|catástrofe|arruinado)\b/gi, detail: 'Ativa medo para provocar obediência rápida.', metric: 'fear_trigger_score' },
+  { name: 'Autoridade sem prova', regex: /\b(especialista|autoridade|fontes secretas|garantido por|100% comprovado)\b/gi, detail: 'Invoca autoridade para evitar questionamento.', metric: 'authority_bias_score' },
+  { name: 'Escassez manipulativa', regex: /\b(últimas vagas|restam apenas|exclusivo|limitado|só para poucos)\b/gi, detail: 'Escassez artificial para gerar impulso.', metric: 'urgency_sensitivity_score' },
+  { name: 'Isolamento social', regex: /\b(não contes a ninguém|só tu percebes|todos estão contra ti|eles escondem)\b/gi, detail: 'Tenta cortar validação externa e crítica.', metric: 'emotional_volatility_index' },
+  { name: 'Polarização extrema', regex: /\b(ou estás connosco ou contra nós|inimigos|traidores|destruir tudo)\b/gi, detail: 'Força pensamento binário e tribal.', metric: 'emotional_volatility_index' }
 ];
 
 const trainingScenarios = [
@@ -82,51 +68,9 @@ function getCurrentUser() {
   return raw ? JSON.parse(raw) : null;
 }
 
-function setSession(token, user) {
-  localStorage.setItem(AUTH_TOKEN_KEY, token);
-  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-}
-
 function clearSession() {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
-}
-
-function showAuthMessage(message, isError = false) {
-  authMessage.textContent = message;
-  authMessage.style.color = isError ? '#ff4d6d' : '#9ba9c2';
-}
-
-function setAuthMode(mode) {
-  authMode = mode;
-  loginTabBtn.classList.toggle('active', mode === 'login');
-  signupTabBtn.classList.toggle('active', mode === 'signup');
-  authSubmitBtn.textContent = mode === 'login' ? 'Entrar' : 'Criar conta';
-  showAuthMessage(mode === 'login' ? 'Entra para continuar.' : 'Cria a tua conta para começar.');
-}
-
-function toggleAppVisibility(isAuthenticated) {
-  authSection.classList.toggle('hidden', isAuthenticated);
-  appSection.classList.toggle('hidden', !isAuthenticated);
-
-  if (isAuthenticated) {
-    const user = getCurrentUser();
-    sessionUser.textContent = user ? `Sessão ativa: ${user.email}` : '';
-  }
-}
-
-async function authRequest(endpoint, payload) {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data.error || 'Falha na autenticação.');
-  }
-  return data;
 }
 
 function computeRisk(score) {
@@ -138,43 +82,26 @@ function computeRisk(score) {
 function enrichTechniques(techniques) {
   return techniques.map((item) => {
     const pattern = patterns.find((p) => p.name === item.name);
-    return {
-      ...item,
-      detail: pattern?.detail || 'Padrão de persuasão identificado.',
-      metric: pattern?.metric || null
-    };
+    return { ...item, detail: pattern?.detail || 'Padrão identificado.', metric: pattern?.metric || null };
   });
 }
 
 function baseProfile() {
   return {
-    user_id: 'local-user',
-    urgency_sensitivity_score: 0,
-    fear_trigger_score: 0,
-    authority_bias_score: 0,
-    financial_vulnerability_score: 0,
-    emotional_volatility_index: 0,
-    exposure_count: 0,
-    category_count: { urgency: 0, financial: 0, political: 0, relational: 0, fear: 0 },
+    user_id: 'local-user', urgency_sensitivity_score: 0, fear_trigger_score: 0,
+    authority_bias_score: 0, financial_vulnerability_score: 0, emotional_volatility_index: 0,
+    exposure_count: 0, category_count: { urgency: 0, financial: 0, political: 0, relational: 0, fear: 0 },
     last_updated: null
   };
 }
 
 function loadProfile() {
-  try {
-    return JSON.parse(localStorage.getItem(PROFILE_KEY)) || baseProfile();
-  } catch {
-    return baseProfile();
-  }
+  try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || baseProfile(); } catch { return baseProfile(); }
 }
 
-function saveProfile(profile) {
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-}
+function saveProfile(profile) { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); }
 
-function weightedUpdate(current, incoming, count) {
-  return Number((((current * count) + incoming) / (count + 1)).toFixed(3));
-}
+function weightedUpdate(current, incoming, count) { return Number((((current * count) + incoming) / (count + 1)).toFixed(3)); }
 
 function updateProfile(analysis, theme) {
   const profile = loadProfile();
@@ -240,13 +167,8 @@ function renderResult(data) {
   resultSection.classList.remove('hidden');
 }
 
-function loadTraining() {
-  return JSON.parse(localStorage.getItem(TRAINING_KEY) || '{"score":0,"hits":0,"attempts":0}');
-}
-
-function saveTraining(stats) {
-  localStorage.setItem(TRAINING_KEY, JSON.stringify(stats));
-}
+function loadTraining() { return JSON.parse(localStorage.getItem(TRAINING_KEY) || '{"score":0,"hits":0,"attempts":0}'); }
+function saveTraining(stats) { localStorage.setItem(TRAINING_KEY, JSON.stringify(stats)); }
 
 function refreshTrainingLevel(stats) {
   const acc = stats.attempts ? stats.hits / stats.attempts : 0;
@@ -261,51 +183,18 @@ function nextScenario() {
   techniqueGuess.value = '';
 }
 
-loginTabBtn.addEventListener('click', () => setAuthMode('login'));
-signupTabBtn.addEventListener('click', () => setAuthMode('signup'));
-
-authSubmitBtn.addEventListener('click', async () => {
-  const email = authEmail.value.trim();
-  const password = authPassword.value.trim();
-
-  if (!email || !password) {
-    showAuthMessage('Preenche email e password.', true);
-    return;
-  }
-
-  try {
-    authSubmitBtn.disabled = true;
-    const endpoint = authMode === 'login' ? '/auth/login' : '/auth/signup';
-    const result = await authRequest(endpoint, { email, password });
-    setSession(result.token, result.user);
-    toggleAppVisibility(true);
-    showAuthMessage('Sessão iniciada com sucesso.');
-    authPassword.value = '';
-  } catch (error) {
-    showAuthMessage(error.message, true);
-  } finally {
-    authSubmitBtn.disabled = false;
-  }
-});
-
 logoutBtn.addEventListener('click', () => {
   clearSession();
-  toggleAppVisibility(false);
-  resultSection.classList.add('hidden');
-  showAuthMessage('Sessão terminada.');
+  window.location.href = 'index.html';
 });
 
 analyzeBtn.addEventListener('click', async () => {
   const text = contentInput.value.trim();
-  if (!text) {
-    alert('Insere um texto para análise.');
-    return;
-  }
+  if (!text) return alert('Insere um texto para análise.');
 
   const token = getToken();
   if (!token) {
-    toggleAppVisibility(false);
-    showAuthMessage('Precisas de iniciar sessão para analisar.', true);
+    window.location.href = 'index.html';
     return;
   }
 
@@ -313,25 +202,14 @@ analyzeBtn.addEventListener('click', async () => {
     analyzeBtn.disabled = true;
     const response = await fetch(`${API_BASE_URL}/analyze`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ text })
     });
-
     const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || 'Erro na análise.');
-    }
+    if (!response.ok) throw new Error(data.error || 'Erro na análise.');
 
     const found = enrichTechniques(data.techniques || []);
-    const analysis = {
-      score: data.score,
-      found,
-      intensity: Math.min(1, data.score / 100)
-    };
-
+    const analysis = { score: data.score, found, intensity: Math.min(1, data.score / 100) };
     renderResult(analysis);
     updateProfile(analysis, themeSelect.value);
   } catch (error) {
@@ -353,6 +231,7 @@ submitGuessBtn.addEventListener('click', () => {
     trainingFeedback.textContent = 'Gera primeiro um cenário.';
     return;
   }
+
   const stats = loadTraining();
   stats.attempts += 1;
   if (techniqueGuess.value === currentScenario.correct_technique) {
@@ -367,15 +246,15 @@ submitGuessBtn.addEventListener('click', () => {
 });
 
 function bootstrap() {
+  const user = getCurrentUser();
+  const token = getToken();
+  if (!user || !token) {
+    window.location.href = 'index.html';
+    return;
+  }
+  sessionUser.textContent = `Sessão ativa: ${user.email}`;
   renderProfile(loadProfile());
   refreshTrainingLevel(loadTraining());
-
-  if (getToken() && getCurrentUser()) {
-    toggleAppVisibility(true);
-  } else {
-    setAuthMode('login');
-    toggleAppVisibility(false);
-  }
 }
 
 bootstrap();
