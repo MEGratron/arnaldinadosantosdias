@@ -1,0 +1,10 @@
+{
+  "name": "defesa-cognitiva",
+  "version": "1.0.0",
+  "description": "Defesa Cognitiva with API (JWT, freemium, Stripe)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check script.js && node --check extension/background.js"
+  }
+}

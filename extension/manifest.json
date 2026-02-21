@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Defesa Cognitiva Alert",
+  "version": "0.1.0",
+  "description": "Analisa texto selecionado e alerta linguagem manipuladora.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_title": "Analisar seleção"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
