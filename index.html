@@ -1,99 +1,70 @@
 <!doctype html>
-<html lang="pt-PT">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Defesa Cognitiva</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <main class="container">
-      <section id="appSection">
-        <header class="hero">
-          <p class="kicker">Prótese cognitiva</p>
-          <h1>Defesa Cognitiva</h1>
-          <p>
-            Esta app não decide a verdade. Ela deteta padrões de manipulação emocional
-            para criar espaço entre estímulo e reação.
-          </p>
-        </header>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeepEye</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
 
-        <section class="input-card">
-          <label for="content">Cola aqui uma mensagem, post, email ou texto:</label>
-          <textarea
-            id="content"
-            rows="10"
-            placeholder="Ex: Se não fizeres isto AGORA vais perder tudo! Só hoje, não contes a ninguém..."
-          ></textarea>
+    <header class="hero">
+      <div class="language-switcher">
+        <select id="languageSelect">
+          <option value="en">English</option>
+          <option value="pt">Português</option>
+        </select>
+      </div>
 
-          <select id="themeSelect" aria-label="Tema principal">
-            <option value="urgency">Urgência</option>
-            <option value="financial">Financeiro</option>
-            <option value="political">Político</option>
-            <option value="relational">Relacional</option>
-            <option value="fear">Medo</option>
-          </select>
+      <div class="badge">Beta</div>
 
-          <button id="analyzeBtn">Analisar manipulação</button>
-        </section>
+      <h1 data-i18n="brand">DeepEye</h1>
 
-        <section id="result" class="result hidden" aria-live="polite">
-          <div class="score-box">
-            <p>Score de manipulação</p>
-            <h2 id="scoreValue">0</h2>
-            <p id="riskLevel" class="risk">Risco baixo</p>
-          </div>
+      <p class="subtitle" data-i18n="subtitle">
+        Cognitive Security Infrastructure
+      </p>
 
-          <div class="details">
-            <h3>Técnicas identificadas</h3>
-            <ul id="techniquesList"></ul>
+      <p class="hero-description" data-i18n="hero_description">
+        DeepEye detects invisible manipulation structures to protect human judgment in the AI era.
+      </p>
+    </header>
 
-            <h3>Explicação clara</h3>
-            <p id="explanation"></p>
-          </div>
-        </section>
+    <section class="input-card">
+      <label for="content" data-i18n="analyze_label">
+        Analyze digital content
+      </label>
 
-        <section class="profile-grid">
-          <article class="profile-card">
-            <h3>Camada 2 — Perfil Cognitivo Pessoal</h3>
-            <p id="dominantTrend">Tendência dominante: sem dados ainda.</p>
-            <ul id="profileMetrics"></ul>
-            <button id="resetProfileBtn" class="ghost">Apagar perfil local</button>
-            <p class="muted">
-              Privado: guardado apenas no teu navegador (localStorage).
-            </p>
-          </article>
+      <textarea
+        id="content"
+        rows="8"
+        placeholder="Paste message, post or email here..."
+      ></textarea>
 
-          <article class="profile-card">
-            <h3>Camada 4 — Treino Cognitivo</h3>
-            <p id="trainingLevel">Nível: Beginner</p>
-            <p id="trainingPrompt">Clica para iniciar um cenário.</p>
+      <button id="analyzeBtn" class="primary-cta" data-i18n="analyze_button">
+        Run Analysis
+      </button>
+    </section>
 
-            <div class="training-controls">
-              <button id="nextScenarioBtn">Novo cenário</button>
+    <section id="result" class="result hidden">
+      <div class="score-box">
+        <p data-i18n="score_label">Manipulation Score</p>
+        <h2 id="scoreValue">0</h2>
+        <p id="riskLevel">Low Risk</p>
+      </div>
 
-              <select id="techniqueGuess">
-                <option value="">Escolhe a técnica detetada</option>
-                <option value="Urgência artificial">Urgência artificial</option>
-                <option value="Ameaça e medo">Ameaça e medo</option>
-                <option value="Autoridade sem prova">Autoridade sem prova</option>
-                <option value="Escassez manipulativa">Escassez manipulativa</option>
-                <option value="Isolamento social">Isolamento social</option>
-                <option value="Polarização extrema">Polarização extrema</option>
-              </select>
+      <div class="details">
+        <h3 data-i18n="techniques_label">Detected Techniques</h3>
+        <ul id="techniquesList"></ul>
 
-              <button id="submitGuessBtn" class="ghost">Responder</button>
-            </div>
+        <h3 data-i18n="explanation_label">Explanation</h3>
+        <p id="explanation"></p>
+      </div>
+    </section>
 
-            <p id="trainingScore">Pontuação: 0</p>
-            <p id="trainingFeedback" class="muted">
-              Treino local, sem ranking público.
-            </p>
-          </article>
-        </section>
-      </section>
-    </main>
+  </main>
 
-    <script src="script.js"></script>
-  </body>
+  <script src="script.js"></script>
+</body>
 </html>
