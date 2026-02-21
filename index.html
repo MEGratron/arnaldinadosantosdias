@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Defesa Cognitiva</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section id="authSection" class="auth-card">
+        <p class="kicker">Entrada segura</p>
+        <h1>Login da app</h1>
+        <p>Esta é a primeira página. Inicia sessão para entrar na plataforma.</p>
+
+        <div class="auth-tabs">
+          <button id="loginTabBtn" class="ghost active">Login</button>
+          <button id="signupTabBtn" class="ghost">Criar conta</button>
+          <button id="createPageBtn" class="ghost">Criar página</button>
+        </div>
+
+        <label for="authEmail">Email</label>
+        <input id="authEmail" type="email" placeholder="teu@email.com" />
+
+        <label for="authPassword">Password</label>
+        <input id="authPassword" type="password" placeholder="mínimo 6 caracteres" />
+
+        <button id="authSubmitBtn">Entrar</button>
+        <p id="authMessage" class="muted"></p>
+      </section>
+    </main>
+
+    <script src="auth.js"></script>
+  </body>
+</html>

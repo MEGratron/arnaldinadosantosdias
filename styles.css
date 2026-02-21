@@ -1,0 +1,54 @@
+:root {
+  color-scheme: dark;
+  --bg: #090d14;
+  --text: #ecf0f6;
+  --muted: #9ba9c2;
+  --accent: #4cc9f0;
+  --warning: #ff9f1c;
+  --danger: #ff4d6d;
+  --ok: #71dd6f;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: radial-gradient(circle at top, #1a2436, var(--bg) 50%);
+  color: var(--text);
+}
+.container { width: min(960px, 92vw); margin: 2rem auto 3rem; display: grid; gap: 1.2rem; }
+.hero,.input-card,.result,.profile-card,.auth-card {
+  background: rgba(19, 28, 43, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.2rem;
+}
+.auth-card { max-width: 480px; margin: 2rem auto; }
+.kicker { text-transform: uppercase; letter-spacing: .15em; color: var(--accent); font-size: .75rem; }
+h1,h2,h3,p { margin: .3rem 0 .7rem; }
+label,.muted { color: var(--muted); }
+textarea,select,input {
+  width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,.15);
+  background: #0a1220; color: var(--text); padding: .85rem; margin-bottom: .8rem;
+}
+button {
+  cursor: pointer; border: 0; background: linear-gradient(90deg,#4361ee,#4cc9f0);
+  color: white; border-radius: 999px; padding: .65rem 1rem; font-weight: 700;
+}
+button.ghost { background: transparent; border: 1px solid rgba(255,255,255,.3); }
+button.ghost.active { border-color: var(--accent); color: var(--accent); }
+.auth-tabs { display: flex; gap: .6rem; margin-bottom: .8rem; }
+.session-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.result { display: grid; gap: 1rem; grid-template-columns: 220px 1fr; }
+.score-box { border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: .9rem; background: #101827; }
+#scoreValue { font-size: 3rem; }
+.risk { font-weight: 700; }
+.risk.low { color: var(--ok); }
+.risk.medium { color: var(--warning); }
+.risk.high { color: var(--danger); }
+.hidden { display: none !important; }
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.training-controls { display: grid; gap: .5rem; }
+@media (max-width: 800px) {
+  .result, .profile-grid { grid-template-columns: 1fr; }
+  .session-row { flex-direction: column; align-items: flex-start; }
+}
