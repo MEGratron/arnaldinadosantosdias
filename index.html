@@ -4,67 +4,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DeepEye</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <div class="background-glow"></div>
+
   <main class="container">
 
     <header class="hero">
-      <div class="language-switcher">
-        <select id="languageSelect">
-          <option value="en">English</option>
-          <option value="pt">Português</option>
-        </select>
-      </div>
-
       <div class="badge">Beta</div>
-
-      <h1 data-i18n="brand">DeepEye</h1>
-
-      <p class="subtitle" data-i18n="subtitle">
-        Cognitive Security Infrastructure
-      </p>
-
-      <p class="hero-description" data-i18n="hero_description">
+      <h1>DeepEye</h1>
+      <p class="subtitle">Cognitive Security Infrastructure</p>
+      <p class="hero-description">
         DeepEye detects invisible manipulation structures to protect human judgment in the AI era.
       </p>
     </header>
 
     <section class="input-card">
-      <label for="content" data-i18n="analyze_label">
-        Analyze digital content
-      </label>
-
-      <textarea
-        id="content"
-        rows="8"
-        placeholder="Paste message, post or email here..."
-      ></textarea>
-
-      <button id="analyzeBtn" class="primary-cta" data-i18n="analyze_button">
-        Run Analysis
-      </button>
+      <label>Analyze digital content</label>
+      <textarea placeholder="Paste message, post or email here..."></textarea>
+      <button class="primary-cta">Run Analysis</button>
     </section>
 
-    <section id="result" class="result hidden">
-      <div class="score-box">
-        <p data-i18n="score_label">Manipulation Score</p>
-        <h2 id="scoreValue">0</h2>
-        <p id="riskLevel">Low Risk</p>
+    <section class="modules">
+
+      <div class="module-card">
+        <h3>Cognitive Risk Profile</h3>
+        <p>
+          Behavioral insights based on detected manipulation patterns.
+          Stored locally and fully private.
+        </p>
+        <button class="ghost-btn">View Profile</button>
       </div>
 
-      <div class="details">
-        <h3 data-i18n="techniques_label">Detected Techniques</h3>
-        <ul id="techniquesList"></ul>
-
-        <h3 data-i18n="explanation_label">Explanation</h3>
-        <p id="explanation"></p>
+      <div class="module-card">
+        <h3>Pattern Recognition Training</h3>
+        <p>
+          Strengthen your ability to identify persuasion structures
+          before reacting.
+        </p>
+        <button class="ghost-btn">Start Training</button>
       </div>
+
     </section>
 
   </main>
 
   <script src="script.js"></script>
+
 </body>
 </html>
