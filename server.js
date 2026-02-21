@@ -29,8 +29,16 @@ function writeDb(db) {
   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
 }
 
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Stripe-Signature',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+  };
+}
+
 function json(res, statusCode, payload) {
-  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+  res.writeHead(statusCode, { 'Content-Type': 'application/json', ...corsHeaders() });
   res.end(JSON.stringify(payload));
 }
 
@@ -176,6 +184,12 @@ function log(req, status, detail = '') {
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
+
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204, corsHeaders());
+      res.end();
+      return;
+    }
 
   if (req.method === 'GET' && url.pathname === '/health') {
     log(req, 200, 'ok');

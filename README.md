@@ -1,23 +1,16 @@
 # Defesa Cognitiva
 
-Aplicação para analisar padrões de manipulação emocional e apoiar decisões com mais calma.
+Aplicação para analisar padrões de manipulação emocional com autenticação de utilizador.
 
 ## Uso rápido
 
-1. Inicia a app:
+1. Inicia a API:
    ```bash
    npm start
    ```
-2. Abre no browser:
-   - `http://localhost:3000` (API)
-   - `index.html` (interface web estática)
-
-## Boas práticas de segurança
-
-- Define segredos fortes no ambiente (ex.: chave JWT e credenciais de pagamentos).
-- Nunca partilhes ficheiros `.env` ou dados locais.
-- Usa HTTPS em produção.
-- Limita acesso administrativo e roda a app atrás de um reverse proxy com proteção adicional.
+2. Abre `index.html` no browser.
+3. Na primeira página, faz login (ou cria conta).
+4. Depois de entrar, usa a análise textual da app.
 
 ## Privacidade
 
