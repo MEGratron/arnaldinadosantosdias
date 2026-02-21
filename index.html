@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Defesa Cognitiva</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="hero">
+        <p class="kicker">Prótese cognitiva</p>
+        <h1>Defesa Cognitiva</h1>
+        <p>
+          Esta app não decide a verdade. Ela detecta padrões de manipulação emocional para criar
+          espaço entre estímulo e reação.
+        </p>
+      </header>
+
+      <section class="input-card">
+        <label for="content">Cola aqui uma mensagem, post, email ou texto:</label>
+        <textarea
+          id="content"
+          rows="10"
+          placeholder="Ex: Se não fizeres isto AGORA vais perder tudo! Só hoje, não contes a ninguém..."
+        ></textarea>
+        <button id="analyzeBtn">Analisar manipulação</button>
+      </section>
+
+      <section id="result" class="result hidden" aria-live="polite">
+        <div class="score-box">
+          <p>Score de manipulação</p>
+          <h2 id="scoreValue">0</h2>
+          <p id="riskLevel" class="risk">Risco baixo</p>
+        </div>
+
+        <div class="details">
+          <h3>Técnicas identificadas</h3>
+          <ul id="techniquesList"></ul>
+
+          <h3>Explicação clara</h3>
+          <p id="explanation"></p>
+        </div>
+      </section>
+
+      <section class="manifesto">
+        <h3>O que esta app é</h3>
+        <ul>
+          <li>Defesa psicológica contra gatilhos automáticos.</li>
+          <li>Camada de consciência digital no dia-a-dia.</li>
+          <li>Infraestrutura pessoal para proteger o julgamento.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
