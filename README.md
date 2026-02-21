@@ -9,6 +9,10 @@ Aplicação para analisar padrões de manipulação emocional com autenticação
    npm start
    ```
 2. Abre `index.html` no browser.
-3. Sem conta, cada IP pode entrar até **5 vezes** pelo botão **Entrar sem conta**.
-4. O computador definido em `EXEMPT_IPS` pode entrar sempre sem limite.
-5. Após autenticação/criação de perfil ou entrada sem conta, o utilizador entra em `app.html`.
+3. Na primeira página, faz login (ou cria conta).
+4. Depois de entrar, usa a análise textual da app.
+
+## Privacidade
+
+- O sistema guarda apenas o mínimo necessário para funcionar.
+- Evita guardar conteúdo sensível sem necessidade.

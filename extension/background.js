@@ -12,7 +12,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   await chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: () => {
-      const selection = globalThis.getSelection?.()?.toString()?.trim();
+      const selection = window.getSelection()?.toString()?.trim();
       return selection || document.body.innerText.slice(0, 600);
     }
   }, async (results) => {
