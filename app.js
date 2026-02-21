@@ -1,13 +1,11 @@
 const API_BASE_URL = localStorage.getItem('apiBaseUrl') || 'http://localhost:3000';
 const AUTH_TOKEN_KEY = 'defesaAuthToken';
 const AUTH_USER_KEY = 'defesaAuthUser';
-const GUEST_SESSION_KEY = 'defesaGuestSession';
 const PROFILE_KEY = 'defesaCognitivaProfile';
 const TRAINING_KEY = 'defesaCognitivaTraining';
 
 const sessionUser = document.querySelector('#sessionUser');
 const logoutBtn = document.querySelector('#logoutBtn');
-const plansBtn = document.querySelector('#plansBtn');
 const analyzeBtn = document.querySelector('#analyzeBtn');
 const contentInput = document.querySelector('#content');
 const themeSelect = document.querySelector('#themeSelect');
@@ -70,37 +68,15 @@ function getCurrentUser() {
   return raw ? JSON.parse(raw) : null;
 }
 
-function getGuestSession() {
-  const raw = localStorage.getItem(GUEST_SESSION_KEY);
-  return raw ? JSON.parse(raw) : null;
-}
-
 function clearSession() {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
-  localStorage.removeItem(GUEST_SESSION_KEY);
 }
 
 function computeRisk(score) {
   if (score >= 65) return { label: 'Risco alto', className: 'high' };
   if (score >= 35) return { label: 'Risco médio', className: 'medium' };
   return { label: 'Risco baixo', className: 'low' };
-}
-
-
-function localAnalyze(text) {
-  const found = [];
-  let score = 0;
-  for (const pattern of patterns) {
-    const matches = text.match(pattern.regex);
-    if (matches?.length) {
-      const localScore = Math.min(30, 12 + (matches.length * 6));
-      score += localScore;
-      found.push({ name: pattern.name, occurrences: matches.length, localScore, detail: pattern.detail, metric: pattern.metric });
-    }
-  }
-  score = Math.min(100, score);
-  return { score, found, intensity: Math.min(1, score / 100) };
 }
 
 function enrichTechniques(techniques) {
@@ -207,13 +183,9 @@ function nextScenario() {
   techniqueGuess.value = '';
 }
 
-plansBtn.addEventListener('click', () => {
-  window.location.href = 'subscriptions.html';
-});
-
 logoutBtn.addEventListener('click', () => {
   clearSession();
-  window.location.href = 'app.html';
+  window.location.href = 'index.html';
 });
 
 analyzeBtn.addEventListener('click', async () => {
@@ -221,35 +193,23 @@ analyzeBtn.addEventListener('click', async () => {
   if (!text) return alert('Insere um texto para análise.');
 
   const token = getToken();
-  const guest = getGuestSession();
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
 
   try {
     analyzeBtn.disabled = true;
+    const response = await fetch(`${API_BASE_URL}/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ text })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erro na análise.');
 
-    if (token) {
-      const response = await fetch(`${API_BASE_URL}/analyze`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ text })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Erro na análise.');
-
-      const found = enrichTechniques(data.techniques || []);
-      const analysis = { score: data.score, found, intensity: Math.min(1, data.score / 100) };
-      renderResult(analysis);
-      updateProfile(analysis, themeSelect.value);
-      return;
-    }
-
-    if (guest?.allowed) {
-      const analysis = localAnalyze(text.toLowerCase());
-      renderResult(analysis);
-      updateProfile(analysis, themeSelect.value);
-      return;
-    }
-
-    const analysis = localAnalyze(text.toLowerCase());
+    const found = enrichTechniques(data.techniques || []);
+    const analysis = { score: data.score, found, intensity: Math.min(1, data.score / 100) };
     renderResult(analysis);
     updateProfile(analysis, themeSelect.value);
   } catch (error) {
@@ -288,16 +248,11 @@ submitGuessBtn.addEventListener('click', () => {
 function bootstrap() {
   const user = getCurrentUser();
   const token = getToken();
-  const guest = getGuestSession();
-
-  if (user && token) {
-    sessionUser.textContent = `Sessão ativa: ${user.email}`;
-  } else if (guest?.allowed) {
-    sessionUser.textContent = 'Sessão convidado ativa (acesso total).';
-  } else {
-    sessionUser.textContent = 'Acesso livre: entra e usa a app sem conta.';
+  if (!user || !token) {
+    window.location.href = 'index.html';
+    return;
   }
-
+  sessionUser.textContent = `Sessão ativa: ${user.email}`;
   renderProfile(loadProfile());
   refreshTrainingLevel(loadTraining());
 }

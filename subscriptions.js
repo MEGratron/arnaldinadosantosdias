@@ -73,12 +73,16 @@ premiumCheckoutBtn.addEventListener('click', async () => {
 backBtn.addEventListener('click', () => {
   const token = getToken();
   const guest = getGuestSession();
-  window.location.href = 'app.html';
+  if (token || guest) {
+    window.location.href = 'app.html';
+    return;
+  }
+  window.location.href = 'index.html';
 });
 
 logoutBtn.addEventListener('click', () => {
   clearSession();
-  window.location.href = 'app.html';
+  window.location.href = 'index.html';
 });
 
 (function bootstrap() {
@@ -92,10 +96,10 @@ logoutBtn.addEventListener('click', () => {
   }
 
   if (guest?.allowed) {
-    planSessionInfo.textContent = 'Sessão convidado ativa (acesso total).';
+    planSessionInfo.textContent = guest.exempt ? 'Sessão convidado ativa (sem limite para este computador).' : `Sessão convidado ativa (restantes: ${guest.remaining ?? 0}).`;
     return;
   }
 
-  planSessionInfo.textContent = 'Acesso livre ativo: podes usar o site sem conta.';
-  setMessage('Podes navegar pelos planos livremente.');
+  planSessionInfo.textContent = 'Sem sessão ativa.';
+  setMessage('Faz login para ativar Premium ou usa Freemium.', true);
 })();
