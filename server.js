@@ -13,13 +13,21 @@ const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || '';
 const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
 const FREEMIUM_LIMIT_PER_DAY = Number(process.env.FREEMIUM_LIMIT_PER_DAY || 5);
+const GUEST_ACCESS_LIMIT = Number(process.env.GUEST_ACCESS_LIMIT || 5);
+const EXEMPT_IPS = (process.env.EXEMPT_IPS || '127.0.0.1,::1,::ffff:127.0.0.1').split(',').map((x) => x.trim()).filter(Boolean);
 
 const DB_FILE = path.join(__dirname, 'data.json');
 
 function initDb() {
   if (!fs.existsSync(DB_FILE)) {
-    const base = { users: [], analyses: [] };
+    const base = { users: [], analyses: [], guest_access: {} };
     fs.writeFileSync(DB_FILE, JSON.stringify(base, null, 2));
+  }
+
+  const db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+  if (!db.guest_access) {
+    db.guest_access = {};
+    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
   }
 }
 
@@ -179,6 +187,22 @@ function verifyStripeSignature(rawBody, signatureHeader) {
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(v1));
 }
 
+
+function normalizeIp(value) {
+  if (!value) return 'unknown';
+  return value.replace(/^::ffff:/, '');
+}
+
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  const candidate = Array.isArray(forwarded) ? forwarded[0] : String(forwarded || '').split(',')[0].trim();
+  return normalizeIp(candidate || req.socket?.remoteAddress || 'unknown');
+}
+
+function isExemptIp(ip) {
+  return EXEMPT_IPS.includes(ip);
+}
+
 function log(req, status, detail = '') {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} -> ${status}${detail ? ` | ${detail}` : ''}`);
 }
@@ -196,6 +220,38 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && url.pathname === '/health') {
     log(req, 200, 'ok');
     return json(res, 200, { ok: true, uptime: process.uptime() });
+  }
+
+  if (req.method === 'GET' && url.pathname === '/guest/access-status') {
+    const ip = getClientIp(req);
+    const db = readDb();
+    const used = Number(db.guest_access?.[ip] || 0);
+    const exempt = isExemptIp(ip);
+    const remaining = exempt ? null : Math.max(0, GUEST_ACCESS_LIMIT - used);
+    log(req, 200, `guest-status ip=${ip} used=${used}`);
+    return json(res, 200, { ip, exempt, used, limit: GUEST_ACCESS_LIMIT, remaining, allowed: exempt || used < GUEST_ACCESS_LIMIT });
+  }
+
+  if (req.method === 'POST' && url.pathname === '/guest/access') {
+    const ip = getClientIp(req);
+    const db = readDb();
+    const used = Number(db.guest_access?.[ip] || 0);
+    const exempt = isExemptIp(ip);
+
+    if (!exempt && used >= GUEST_ACCESS_LIMIT) {
+      log(req, 429, `guest-limit ip=${ip}`);
+      return json(res, 429, { error: 'Limite de acessos sem conta atingido para este IP.', ip, limit: GUEST_ACCESS_LIMIT, remaining: 0, exempt: false });
+    }
+
+    if (!exempt) {
+      db.guest_access[ip] = used + 1;
+      writeDb(db);
+    }
+
+    const updatedUsed = exempt ? used : used + 1;
+    const remaining = exempt ? null : Math.max(0, GUEST_ACCESS_LIMIT - updatedUsed);
+    log(req, 200, `guest-access ip=${ip} used=${updatedUsed}`);
+    return json(res, 200, { allowed: true, ip, exempt, used: updatedUsed, limit: GUEST_ACCESS_LIMIT, remaining });
   }
 
   if (req.method === 'POST' && url.pathname === '/auth/signup') {

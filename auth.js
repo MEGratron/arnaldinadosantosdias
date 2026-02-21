@@ -1,6 +1,7 @@
 const API_BASE_URL = localStorage.getItem('apiBaseUrl') || 'http://localhost:3000';
 const AUTH_TOKEN_KEY = 'defesaAuthToken';
 const AUTH_USER_KEY = 'defesaAuthUser';
+const GUEST_SESSION_KEY = 'defesaGuestSession';
 
 const loginTabBtn = document.querySelector('#loginTabBtn');
 const signupTabBtn = document.querySelector('#signupTabBtn');
@@ -8,6 +9,7 @@ const createPageBtn = document.querySelector('#createPageBtn');
 const authEmail = document.querySelector('#authEmail');
 const authPassword = document.querySelector('#authPassword');
 const authSubmitBtn = document.querySelector('#authSubmitBtn');
+const guestAccessBtn = document.querySelector('#guestAccessBtn');
 const authMessage = document.querySelector('#authMessage');
 
 let authMode = 'login';
@@ -33,6 +35,16 @@ function setAuthMode(mode) {
   signupTabBtn.classList.toggle('active', mode === 'signup');
   authSubmitBtn.textContent = mode === 'login' ? 'Entrar' : 'Criar conta';
   showAuthMessage(mode === 'login' ? 'Entra para continuar.' : 'Cria a tua conta para começar.');
+}
+
+
+async function requestGuestAccess() {
+  const response = await fetch(`${API_BASE_URL}/guest/access`, { method: 'POST' });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || 'Acesso sem conta indisponível para este IP.');
+  }
+  return data;
 }
 
 async function authRequest(endpoint, payload) {
@@ -78,7 +90,28 @@ authSubmitBtn.addEventListener('click', async () => {
   }
 });
 
-if (getCurrentUser()) {
+
+guestAccessBtn.addEventListener('click', async () => {
+  try {
+    guestAccessBtn.disabled = true;
+    const access = await requestGuestAccess();
+    localStorage.setItem(GUEST_SESSION_KEY, JSON.stringify({
+      allowed: true,
+      ip: access.ip,
+      exempt: access.exempt,
+      remaining: access.remaining,
+      createdAt: new Date().toISOString()
+    }));
+    showAuthMessage(access.exempt ? 'Acesso livre autorizado para este computador.' : `Acesso sem conta autorizado. Restantes: ${access.remaining}`);
+    window.location.href = 'app.html';
+  } catch (error) {
+    showAuthMessage(error.message, true);
+  } finally {
+    guestAccessBtn.disabled = false;
+  }
+});
+
+if (getCurrentUser() || localStorage.getItem(GUEST_SESSION_KEY)) {
   window.location.href = 'app.html';
 } else {
   setAuthMode('login');
