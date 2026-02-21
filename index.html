@@ -12,7 +12,7 @@
         <p class="kicker">Prótese cognitiva</p>
         <h1>Defesa Cognitiva</h1>
         <p>
-          Esta app não decide a verdade. Ela detecta padrões de manipulação emocional para criar
+          Esta app não decide a verdade. Ela deteta padrões de manipulação emocional para criar
           espaço entre estímulo e reação.
         </p>
       </header>
@@ -24,6 +24,13 @@
           rows="10"
           placeholder="Ex: Se não fizeres isto AGORA vais perder tudo! Só hoje, não contes a ninguém..."
         ></textarea>
+        <select id="themeSelect" aria-label="Tema principal">
+          <option value="urgency">Urgência</option>
+          <option value="financial">Financeiro</option>
+          <option value="political">Político</option>
+          <option value="relational">Relacional</option>
+          <option value="fear">Medo</option>
+        </select>
         <button id="analyzeBtn">Analisar manipulação</button>
       </section>
 
@@ -43,13 +50,51 @@
         </div>
       </section>
 
+      <section class="profile-grid">
+        <article class="profile-card">
+          <h3>Camada 2 — Perfil Cognitivo Pessoal</h3>
+          <p id="dominantTrend">Tendência dominante: sem dados ainda.</p>
+          <ul id="profileMetrics"></ul>
+          <button id="resetProfileBtn" class="ghost">Apagar perfil local</button>
+          <p class="muted">Privado: guardado apenas no teu navegador (localStorage).</p>
+        </article>
+
+        <article class="profile-card">
+          <h3>Camada 4 — Treino Cognitivo</h3>
+          <p id="trainingLevel">Nível: Beginner</p>
+          <p id="trainingPrompt">Clica para iniciar um cenário.</p>
+          <div class="training-controls">
+            <button id="nextScenarioBtn">Novo cenário</button>
+            <select id="techniqueGuess">
+              <option value="">Escolhe a técnica detetada</option>
+              <option value="Urgência artificial">Urgência artificial</option>
+              <option value="Ameaça e medo">Ameaça e medo</option>
+              <option value="Autoridade sem prova">Autoridade sem prova</option>
+              <option value="Escassez manipulativa">Escassez manipulativa</option>
+              <option value="Isolamento social">Isolamento social</option>
+              <option value="Polarização extrema">Polarização extrema</option>
+            </select>
+            <button id="submitGuessBtn" class="ghost">Responder</button>
+          </div>
+          <p id="trainingScore">Pontuação: 0</p>
+          <p id="trainingFeedback" class="muted">Treino local, sem ranking público.</p>
+        </article>
+      </section>
+
       <section class="manifesto">
-        <h3>O que esta app é</h3>
-        <ul>
-          <li>Defesa psicológica contra gatilhos automáticos.</li>
-          <li>Camada de consciência digital no dia-a-dia.</li>
-          <li>Infraestrutura pessoal para proteger o julgamento.</li>
-        </ul>
+        <h3>Camada 3 — Proteção em tempo real</h3>
+        <p>
+          Foi adicionada uma extensão mínima em <code>extension/</code> para analisar texto selecionado
+          no browser e mostrar alerta discreto de urgência/manipulação.
+        </p>
+        <h3>Roadmap estratégico</h3>
+        <ol>
+          <li>Camada 2 (perfil pessoal)</li>
+          <li>Camada 3 (extensão + proteção tempo real)</li>
+          <li>Camada 4 (treino cognitivo)</li>
+          <li>API institucional</li>
+          <li>Multimodal</li>
+        </ol>
       </section>
     </main>
 
