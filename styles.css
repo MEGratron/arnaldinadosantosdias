@@ -1,36 +1,58 @@
 body {
   margin: 0;
+  font-family: 'Inter', sans-serif;
   background: #050B18;
   color: #F9FAFB;
-  font-family: 'Inter', sans-serif;
   overflow-x: hidden;
 }
 
-.background-glow {
+/* Background sophistication */
+
+.bg-gradient {
   position: fixed;
   top: 50%;
   left: 50%;
   width: 1200px;
   height: 1200px;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(37,99,235,0.25) 0%, rgba(5,11,24,0) 60%);
+  background: radial-gradient(circle at center,
+    rgba(59,130,246,0.25) 0%,
+    rgba(5,11,24,0) 60%);
+  z-index: -2;
+  animation: pulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: translate(-50%, -50%) scale(1); }
+  to { transform: translate(-50%, -50%) scale(1.05); }
+}
+
+.bg-noise {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url('https://grainy-gradients.vercel.app/noise.svg');
+  opacity: 0.05;
   z-index: -1;
 }
+
+/* Layout */
 
 .container {
   max-width: 900px;
   margin: auto;
-  padding: 80px 20px;
+  padding: 120px 20px 80px;
 }
 
 .hero {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 70px;
 }
 
 .hero h1 {
-  font-size: 52px;
+  font-size: 60px;
   font-weight: 700;
+  letter-spacing: -2px;
   margin: 10px 0;
 }
 
@@ -44,58 +66,90 @@ body {
   color: #9CA3AF;
   max-width: 600px;
   margin: auto;
+  line-height: 1.6;
 }
 
 .badge {
   display: inline-block;
-  padding: 5px 12px;
+  padding: 6px 14px;
   background: rgba(59,130,246,0.15);
   color: #3B82F6;
   border-radius: 20px;
   font-size: 12px;
-  margin-bottom: 15px;
+  font-weight: 500;
 }
 
+/* Input Card */
+
 .input-card {
-  background: #0F172A;
-  padding: 30px;
-  border-radius: 12px;
-  margin-bottom: 50px;
-  box-shadow: 0 0 40px rgba(59,130,246,0.05);
+  background: rgba(15,23,42,0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 35px;
+  border-radius: 16px;
+  margin-bottom: 70px;
+  transition: all 0.4s ease;
+}
+
+.input-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(59,130,246,0.1);
 }
 
 textarea {
   width: 100%;
   background: #0B1220;
   border: 1px solid #1F2937;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 15px;
   color: white;
-  margin-top: 10px;
-  margin-bottom: 20px;
+  margin: 15px 0 25px;
+  transition: border 0.3s ease;
 }
+
+textarea:focus {
+  outline: none;
+  border-color: #3B82F6;
+}
+
+/* Buttons */
 
 .primary-cta {
   background: linear-gradient(90deg, #4F46E5, #06B6D4);
   border: none;
-  padding: 14px 28px;
-  border-radius: 8px;
+  padding: 14px 30px;
+  border-radius: 10px;
   font-weight: 600;
   color: white;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.primary-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(6,182,212,0.4);
+}
+
+/* Modules */
 
 .modules {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 25px;
+  gap: 30px;
 }
 
 .module-card {
-  background: #0F172A;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(59,130,246,0.05);
+  background: rgba(15,23,42,0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 30px;
+  border-radius: 16px;
+  transition: all 0.4s ease;
+}
+
+.module-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 25px 70px rgba(59,130,246,0.12);
 }
 
 .module-card h3 {
@@ -104,17 +158,43 @@ textarea {
 
 .module-card p {
   color: #9CA3AF;
-  margin-bottom: 20px;
+  line-height: 1.6;
 }
 
 .ghost-btn {
   background: transparent;
   border: 1px solid #3B82F6;
-  padding: 10px 18px;
+  padding: 10px 20px;
   border-radius: 8px;
   color: #3B82F6;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
+
+.ghost-btn:hover {
+  background: rgba(59,130,246,0.1);
+}
+
+/* Animations */
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+.delay-3 { animation-delay: 0.6s; }
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
 
 @media (max-width: 768px) {
   .modules {
@@ -122,6 +202,6 @@ textarea {
   }
 
   .hero h1 {
-    font-size: 40px;
+    font-size: 44px;
   }
 }
